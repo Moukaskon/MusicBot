@@ -30,7 +30,8 @@ import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.audio.QueuedTrack;
 import com.jagrosh.jmusicbot.commands.DJCommand;
 import com.jagrosh.jmusicbot.commands.MusicCommand;
-import com.jagrosh.jmusicbot.playlist.PlaylistLoader.Playlist;
+import com.jagrosh.jmusicbot.playlist.PlaylistLoader;
+import com.jagrosh.jmusicbot.playlist.Playlist;
 import com.jagrosh.jmusicbot.utils.FormatUtil;
 import java.util.concurrent.TimeUnit;
 import net.dv8tion.jda.api.Permission;
@@ -236,27 +237,37 @@ public class PlayCmd extends MusicCommand
                 event.reply(event.getClient().getError()+" Please include a playlist name.");
                 return;
             }
-            Playlist playlist = bot.getPlaylistLoader().getPlaylist(event.getArgs());
+            Playlist playlist = Playlist.loadPlaylist(event.getArgs());
             if(playlist==null)
             {
                 event.replyError("I could not find `"+event.getArgs()+".txt` in the Playlists folder.");
                 return;
             }
-            event.getChannel().sendMessage(loadingEmoji+" Loading playlist **"+event.getArgs()+"**... ("+playlist.getItems().size()+" items)").queue(m -> 
+            event.getChannel().sendMessage(loadingEmoji+" Loading playlist **"+event.getArgs()+"**... ("+playlist.getTracks().size()+" items)").queue(m -> 
             {
                 AudioHandler handler = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
-                playlist.loadTracks(bot.getPlayerManager(), (at)->handler.addTrack(new QueuedTrack(at, RequestMetadata.fromResultHandler(at, event))), () -> {
-                    StringBuilder builder = new StringBuilder(playlist.getTracks().isEmpty() 
-                            ? event.getClient().getWarning()+" No tracks were loaded!" 
-                            : event.getClient().getSuccess()+" Loaded **"+playlist.getTracks().size()+"** tracks!");
-                    if(!playlist.getErrors().isEmpty())
-                        builder.append("\nThe following tracks failed to load:");
-                    playlist.getErrors().forEach(err -> builder.append("\n`[").append(err.getIndex()+1).append("]` **").append(err.getItem()).append("**: ").append(err.getReason()));
-                    String str = builder.toString();
-                    if(str.length()>2000)
-                        str = str.substring(0,1994)+" (...)";
-                    m.editMessage(FormatUtil.filter(str)).queue();
-                });
+                playlist.loadTracks(bot.getPlayerManager(), 
+                    (at) -> handler.addTrack(new QueuedTrack(at, RequestMetadata.fromResultHandler(at, event))), 
+                    () -> {
+                        StringBuilder builder = new StringBuilder(playlist.getTracks().isEmpty() 
+                                ? event.getClient().getWarning()+" No tracks were loaded!" 
+                                : event.getClient().getSuccess()+" Loaded **"+playlist.getTracks().size()+"** tracks!");
+                        
+                        if(!playlist.getErrors().isEmpty())
+                        {
+                            builder.append("\nThe following tracks failed to load:");
+                            playlist.getErrors().forEach(err -> 
+                                builder.append("\n`[").append(err.getIndex()+1).append("]` **")
+                                       .append(err.getItem()).append("**: ").append(err.getReason()));
+                        }
+                        
+                        String str = builder.toString();
+                        if(str.length() > 2000)
+                            str = str.substring(0, 1994) + " (...)";
+                        
+                        m.editMessage(FormatUtil.filter(str)).queue();
+                    }
+                );
             });
         }
     }

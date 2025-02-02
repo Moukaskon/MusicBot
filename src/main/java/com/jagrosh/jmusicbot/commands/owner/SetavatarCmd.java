@@ -21,8 +21,6 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.commands.OwnerCommand;
 import com.jagrosh.jmusicbot.utils.OtherUtil;
-import com.jagrosh.jmusicbot.utils.ResourceUtil;
-
 import net.dv8tion.jda.api.entities.Icon;
 
 /**
@@ -51,7 +49,7 @@ public class SetavatarCmd extends OwnerCommand
                 url = null;
         else
             url = event.getArgs();
-        InputStream s = ResourceUtil.imageFromUrl(url);
+        InputStream s = OtherUtil.imageFromUrl(url);
         if(s==null)
         {
             event.reply(event.getClient().getError()+" Invalid or missing URL");

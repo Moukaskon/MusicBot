@@ -16,8 +16,7 @@
 package com.jagrosh.jmusicbot.settings;
 
 import com.jagrosh.jdautilities.command.GuildSettingsManager;
-import com.jagrosh.jmusicbot.utils.PathUtil;
-
+import com.jagrosh.jmusicbot.utils.OtherUtil;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -43,7 +42,7 @@ public class SettingsManager implements GuildSettingsManager<Settings>
         this.settings = new HashMap<>();
 
         try {
-            JSONObject loadedSettings = new JSONObject(new String(Files.readAllBytes(PathUtil.getPath(SETTINGS_FILE))));
+            JSONObject loadedSettings = new JSONObject(new String(Files.readAllBytes(OtherUtil.getPath(SETTINGS_FILE))));
             loadedSettings.keySet().forEach((id) -> {
                 JSONObject o = loadedSettings.getJSONObject(id);
 
@@ -66,8 +65,8 @@ public class SettingsManager implements GuildSettingsManager<Settings>
         } catch (NoSuchFileException e) {
             // create an empty json file
             try {
-                LOG.info("serversettings.json will be created in " + PathUtil.getPath("serversettings.json").toAbsolutePath());
-                Files.write(PathUtil.getPath("serversettings.json"), new JSONObject().toString(4).getBytes());
+                LOG.info("serversettings.json will be created in " + OtherUtil.getPath("serversettings.json").toAbsolutePath());
+                Files.write(OtherUtil.getPath("serversettings.json"), new JSONObject().toString(4).getBytes());
             } catch(IOException ex) {
                 LOG.warn("Failed to create new settings file: "+ex);
             }
@@ -76,7 +75,7 @@ public class SettingsManager implements GuildSettingsManager<Settings>
             LOG.warn("Failed to load server settings: "+e);
         }
 
-        LOG.info("serversettings.json loaded from " + PathUtil.getPath("serversettings.json").toAbsolutePath());
+        LOG.info("serversettings.json loaded from " + OtherUtil.getPath("serversettings.json").toAbsolutePath());
     }
 
     /**
@@ -128,7 +127,7 @@ public class SettingsManager implements GuildSettingsManager<Settings>
             obj.put(Long.toString(key), o);
         });
         try {
-            Files.write(PathUtil.getPath(SETTINGS_FILE), obj.toString(4).getBytes());
+            Files.write(OtherUtil.getPath(SETTINGS_FILE), obj.toString(4).getBytes());
         } catch(IOException ex){
             LOG.warn("Failed to write to file: "+ex);
         }
