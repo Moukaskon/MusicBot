@@ -16,7 +16,7 @@
 package com.jagrosh.jmusicbot.playlist;
 
 import com.jagrosh.jmusicbot.BotConfig;
-import com.jagrosh.jmusicbot.utils.OtherUtil;
+import com.jagrosh.jmusicbot.utils.PathUtil;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -46,7 +46,7 @@ public class PlaylistLoader
     {
         if(folderExists())
         {
-            File folder = new File(OtherUtil.getPath(config.getPlaylistsFolder()).toString());
+            File folder = new File(PathUtil.getPath(config.getPlaylistsFolder()).toString());
             return Arrays.asList(folder.listFiles((pathname) -> pathname.getName().endsWith(".txt")))
                     .stream().map(f -> f.getName().substring(0,f.getName().length()-4)).collect(Collectors.toList());
         }
@@ -61,29 +61,29 @@ public class PlaylistLoader
     {
         try
         {
-            Files.createDirectory(OtherUtil.getPath(config.getPlaylistsFolder()));
+            Files.createDirectory(PathUtil.getPath(config.getPlaylistsFolder()));
         } 
         catch (IOException ignore) {}
     }
     
     public boolean folderExists()
     {
-        return Files.exists(OtherUtil.getPath(config.getPlaylistsFolder()));
+        return Files.exists(PathUtil.getPath(config.getPlaylistsFolder()));
     }
     
     public void createPlaylist(String name) throws IOException
     {
-        Files.createFile(OtherUtil.getPath(config.getPlaylistsFolder()+File.separator+name+".txt"));
+        Files.createFile(PathUtil.getPath(config.getPlaylistsFolder()+File.separator+name+".txt"));
     }
     
     public void deletePlaylist(String name) throws IOException
     {
-        Files.delete(OtherUtil.getPath(config.getPlaylistsFolder()+File.separator+name+".txt"));
+        Files.delete(PathUtil.getPath(config.getPlaylistsFolder()+File.separator+name+".txt"));
     }
     
     public void writePlaylist(String name, String text) throws IOException
     {
-        Files.write(OtherUtil.getPath(config.getPlaylistsFolder()+File.separator+name+".txt"), text.trim().getBytes());
+        Files.write(PathUtil.getPath(config.getPlaylistsFolder()+File.separator+name+".txt"), text.trim().getBytes());
     }
     
     public Playlist getPlaylist(String name)
@@ -96,7 +96,7 @@ public class PlaylistLoader
             {
                 boolean[] shuffle = {false};
                 List<String> list = new ArrayList<>();
-                Files.readAllLines(OtherUtil.getPath(config.getPlaylistsFolder()+File.separator+name+".txt")).forEach(str -> 
+                Files.readAllLines(PathUtil.getPath(config.getPlaylistsFolder()+File.separator+name+".txt")).forEach(str -> 
                 {
                     String s = str.trim();
                     if(s.isEmpty())
