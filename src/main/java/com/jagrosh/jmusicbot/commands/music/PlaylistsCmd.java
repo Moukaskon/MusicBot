@@ -19,8 +19,6 @@ import java.util.List;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.commands.MusicCommand;
-import com.jagrosh.jmusicbot.playlist.Playlist;
-import com.jagrosh.jmusicbot.playlist.PlaylistLoader;
 
 /**
  *
@@ -36,22 +34,20 @@ public class PlaylistsCmd extends MusicCommand
         this.aliases = bot.getConfig().getAliases(this.name);
         this.guildOnly = true;
         this.beListening = false;
-        this.beListening = false;
+        this.bePlaying = false;
     }
     
     @Override
     public void doCommand(CommandEvent event) 
     {
-    	PlaylistLoader playlistLoader = bot.getPlaylistLoader();
-    	
-    	 if(!playlistLoader.folderExists())
-             playlistLoader.createFolder();
-         if(!playlistLoader.folderExists())
-         {
-             event.reply(event.getClient().getWarning()+" Playlists folder does not exist and could not be created!");
-             return;
-         }
-        List<String> list = playlistLoader.getPlaylistNames();
+        if(!bot.getPlaylistLoader().folderExists())
+            bot.getPlaylistLoader().createFolder();
+        if(!bot.getPlaylistLoader().folderExists())
+        {
+            event.reply(event.getClient().getWarning()+" Playlists folder does not exist and could not be created!");
+            return;
+        }
+        List<String> list = bot.getPlaylistLoader().getPlaylistNames();
         if(list==null)
             event.reply(event.getClient().getError()+" Failed to load available playlists!");
         else if(list.isEmpty())
